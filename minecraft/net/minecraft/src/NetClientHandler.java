@@ -1012,6 +1012,9 @@ public class NetClientHandler extends NetHandler
 							json.getString("b1"), json.getString("b2"),
 							json.getString("b1c"), json.getString("b2c"));
 					mc.displayGuiScreen(questionGui);
+				}else if(json.getString("id").equalsIgnoreCase("mailbox")){
+					GuiSFMailbox mailboxGui = new GuiSFMailbox(json.getJSONArray("mails"));
+					mc.displayGuiScreen(mailboxGui);
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
