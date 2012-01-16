@@ -6,7 +6,7 @@ import org.lwjgl.input.Keyboard;
 
 public class GuiSFNewMail extends GuiScreen {
 	    private GuiTextField mailto;
-	    private GuiTextField mailtext;
+	    private GuiSFMultiLineTextField mailtext;
 	    private String to1 = "";
 	    private GuiScreen guiscreen;
 	    public GuiSFNewMail(GuiScreen guiscreen)
@@ -29,10 +29,10 @@ public class GuiSFNewMail extends GuiScreen {
 	        StringTranslate stringtranslate = StringTranslate.getInstance();
 	        Keyboard.enableRepeatEvents(true);
 	        controlList.clear();
-	        controlList.add(new GuiButton(0, width / 2 - 100, height / 4 + 96 + 12, "Send!"));
-	        controlList.add(new GuiButton(1, width / 2 - 100, height / 4 + 120 + 12, stringtranslate.translateKey("gui.cancel")));
-	        mailto = new GuiTextField(this, fontRenderer, width / 2 - 100, 76, 200, 20, to1);
-	        mailtext = new GuiTextField(this, fontRenderer, width / 2 - 100, 116, 200, 20, "");
+	        controlList.add(new GuiButton(0, width / 2 - 100, height / 4 + 106 + 12, "Send!"));
+	        controlList.add(new GuiButton(1, width / 2 - 100, height / 4 + 130 + 12, stringtranslate.translateKey("gui.cancel")));
+	        mailto = new GuiTextField(this, fontRenderer, width / 2 - 100, 56, 200, 20, to1);
+	        mailtext = new GuiSFMultiLineTextField(this, fontRenderer, width / 2 - 100, 96, 200, 80, "", 7);
 	        if(to1.length() > 0){
 	        	mailto.isFocused = false;
 	        	mailtext.isFocused = true;
@@ -40,6 +40,7 @@ public class GuiSFNewMail extends GuiScreen {
 	        	mailto.isFocused = true;
 	        	mailtext.isFocused = false;
 	        }
+	        mailto.setMaxStringLength(16);
 	        ((GuiButton)controlList.get(0)).enabled = mailtext.getText().length() > 0 && mailtext.getText().length() > 0;
 	    }
 
@@ -126,8 +127,8 @@ public class GuiSFNewMail extends GuiScreen {
 	        StringTranslate stringtranslate = StringTranslate.getInstance();
 	        drawDefaultBackground();
 	        drawCenteredString(fontRenderer, "Send mail", width / 2, (height / 4 - 60) + 20, 0xffffff);
-	        drawString(fontRenderer, "To:", width / 2 - 100, 63, 0xa0a0a0);
-	        drawString(fontRenderer, "Mail:", width / 2 - 100, 104, 0xa0a0a0);
+	        drawString(fontRenderer, "To:", width / 2 - 100, 43, 0xa0a0a0);
+	        drawString(fontRenderer, "Mail:", width / 2 - 100, 84, 0xa0a0a0);
 	        mailto.drawTextBox();
 	        mailtext.drawTextBox();
 	        super.drawScreen(i, j, f);

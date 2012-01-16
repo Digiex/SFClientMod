@@ -975,6 +975,7 @@ public class NetClientHandler extends NetHandler
 			System.out.println("Checking to see if this will be registered");
 			if (message.startsWith("simplefeatures")) {
 				System.out.println("Yay! It will be registered!");
+				SFClientMod.isEnabled=true;
 				Packet250CustomPayload newpacket = new Packet250CustomPayload();
 				newpacket.field_44012_a = "REGISTER";
 				byte[] pname = ("simplefeatures").getBytes();
@@ -987,6 +988,7 @@ public class NetClientHandler extends NetHandler
 				try {
 					msgjson.put("id", "login");
 					msgjson.put("version", SFClientMod.version);
+					msgjson.put("lang", StringTranslate.getInstance().func_44024_c());
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
