@@ -63,7 +63,7 @@ public class GuiSFNewMail extends GuiScreen {
 	        {
 	            System.out.println("Send the message to "+mailto.getText()+" with body: "+mailtext.getText());
 				Packet250CustomPayload packet = new Packet250CustomPayload();
-				packet.field_44012_a = "simplefeatures";
+				packet.channel = "simplefeatures";
 				JSONObject msgjson = new JSONObject();
 				try {
 					msgjson.put("id", "sendmail");
@@ -75,8 +75,8 @@ public class GuiSFNewMail extends GuiScreen {
 				}
 				
 				byte[] msg = msgjson.toString().getBytes();
-				packet.field_44010_b = msg.length;
-				packet.field_44011_c = msg;
+				packet.length = msg.length;
+				packet.data = msg;
 				mc.getSendQueue().addToSendQueue(packet);
 				mc.displayGuiScreen(null);
 	        }

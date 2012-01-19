@@ -51,8 +51,8 @@ public class NetClientHandler extends NetHandler
     {
         mc.playerController = new PlayerControllerMP(mc, this);
         mc.statFileWriter.readStat(StatList.joinMultiplayerStat, 1);
-        worldClient = new WorldClient(this, new WorldSettings(packet1login.mapSeed, packet1login.serverMode, false, false, packet1login.field_46032_d), packet1login.worldType, packet1login.difficultySetting);
-        worldClient.multiplayerWorld = true;
+        worldClient = new WorldClient(this, new WorldSettings(packet1login.mapSeed, packet1login.serverMode, false, false, packet1login.terrainType), packet1login.worldType, packet1login.difficultySetting);
+        worldClient.isRemote = true;
         mc.changeWorld1(worldClient);
         mc.thePlayer.dimension = packet1login.worldType;
         mc.displayGuiScreen(new GuiDownloadTerrain(this));
@@ -193,7 +193,7 @@ public class NetClientHandler extends NetHandler
 
     public void handleEntityExpOrb(Packet26EntityExpOrb packet26entityexporb)
     {
-        EntityXPOrb entityxporb = new EntityXPOrb(worldClient, packet26entityexporb.posX, packet26entityexporb.posY, packet26entityexporb.posZ, packet26entityexporb.count);
+        EntityXPOrb entityxporb = new EntityXPOrb(worldClient, packet26entityexporb.posX, packet26entityexporb.posY, packet26entityexporb.posZ, packet26entityexporb.xpValue);
         entityxporb.serverPosX = packet26entityexporb.posX;
         entityxporb.serverPosY = packet26entityexporb.posY;
         entityxporb.serverPosZ = packet26entityexporb.posZ;
@@ -473,7 +473,7 @@ public class NetClientHandler extends NetHandler
         mc.ingameGUI.addChatMessage(packet3chat.message);
     }
 
-    public void handleArmAnimation(Packet18Animation packet18animation)
+    public void handleAnimation(Packet18Animation packet18animation)
     {
         Entity entity = getEntityByID(packet18animation.entityId);
         if (entity == null)
@@ -634,7 +634,7 @@ public class NetClientHandler extends NetHandler
     public void handleSpawnPosition(Packet6SpawnPosition packet6spawnposition)
     {
         mc.thePlayer.setPlayerSpawnCoordinate(new ChunkCoordinates(packet6spawnposition.xPosition, packet6spawnposition.yPosition, packet6spawnposition.zPosition));
-        mc.theWorld.getWorldInfo().setSpawn(packet6spawnposition.xPosition, packet6spawnposition.yPosition, packet6spawnposition.zPosition);
+        mc.theWorld.getWorldInfo().setSpawnPosition(packet6spawnposition.xPosition, packet6spawnposition.yPosition, packet6spawnposition.zPosition);
     }
 
     public void handleAttachEntity(Packet39AttachEntity packet39attachentity)
@@ -677,7 +677,7 @@ public class NetClientHandler extends NetHandler
         }
     }
 
-    public void handleHealth(Packet8UpdateHealth packet8updatehealth)
+    public void handleUpdateHealth(Packet8UpdateHealth packet8updatehealth)
     {
         mc.thePlayer.setHealth(packet8updatehealth.healthMP);
         mc.thePlayer.getFoodStats().setFoodLevel(packet8updatehealth.food);
@@ -691,11 +691,11 @@ public class NetClientHandler extends NetHandler
 
     public void handleRespawn(Packet9Respawn packet9respawn)
     {
-        if (packet9respawn.respawnDimension != mc.thePlayer.dimension || packet9respawn.mapSeed != mc.thePlayer.worldObj.getWorldSeed())
+        if (packet9respawn.respawnDimension != mc.thePlayer.dimension || packet9respawn.mapSeed != mc.thePlayer.worldObj.getSeed())
         {
             field_1210_g = false;
-            worldClient = new WorldClient(this, new WorldSettings(packet9respawn.mapSeed, packet9respawn.creativeMode, false, false, packet9respawn.field_46031_f), packet9respawn.respawnDimension, packet9respawn.difficulty);
-            worldClient.multiplayerWorld = true;
+            worldClient = new WorldClient(this, new WorldSettings(packet9respawn.mapSeed, packet9respawn.creativeMode, false, false, packet9respawn.terrainType), packet9respawn.respawnDimension, packet9respawn.difficulty);
+            worldClient.isRemote = true;
             mc.changeWorld1(worldClient);
             mc.thePlayer.dimension = packet9respawn.respawnDimension;
             mc.displayGuiScreen(new GuiDownloadTerrain(this));
@@ -772,7 +772,7 @@ public class NetClientHandler extends NetHandler
         }
     }
 
-    public void handleContainerTransaction(Packet106Transaction packet106transaction)
+    public void handleTransaction(Packet106Transaction packet106transaction)
     {
         Container container = null;
         if (packet106transaction.windowId == 0)
@@ -850,7 +850,7 @@ public class NetClientHandler extends NetHandler
         mc.thePlayer.closeScreen();
     }
 
-    public void handleNotePlay(Packet54PlayNoteBlock packet54playnoteblock)
+    public void handlePlayNoteBlock(Packet54PlayNoteBlock packet54playnoteblock)
     {
         mc.theWorld.playNoteAt(packet54playnoteblock.xLocation, packet54playnoteblock.yLocation, packet54playnoteblock.zLocation, packet54playnoteblock.instrumentType, packet54playnoteblock.pitch);
     }
@@ -882,7 +882,7 @@ public class NetClientHandler extends NetHandler
         }
     }
 
-    public void handleItemData(Packet131MapData packet131mapdata)
+    public void handleMapData(Packet131MapData packet131mapdata)
     {
         if (packet131mapdata.itemID == Item.map.shiftedIndex)
         {
@@ -963,13 +963,13 @@ public class NetClientHandler extends NetHandler
     }
 
 	public void func_44028_a(Packet250CustomPayload packet250custompayload) {
-		String tag = packet250custompayload.field_44012_a;
-		int length = packet250custompayload.field_44010_b;
-		byte[] data = packet250custompayload.field_44011_c;
+		String tag = packet250custompayload.channel;
+		int length = packet250custompayload.length;
+		byte[] data = packet250custompayload.data;
 		String message = "";
 		message = new String(data);
 		System.out.println("Got a plugin message, channel "
-				+ packet250custompayload.field_44012_a + ", contents: "
+				+ packet250custompayload.channel + ", contents: "
 				+ message);
 		if (tag.equalsIgnoreCase("REGISTER")) {
 			System.out.println("Checking to see if this will be registered");
@@ -977,13 +977,13 @@ public class NetClientHandler extends NetHandler
 				System.out.println("Yay! It will be registered!");
 				SFClientMod.isEnabled=true;
 				Packet250CustomPayload newpacket = new Packet250CustomPayload();
-				newpacket.field_44012_a = "REGISTER";
+				newpacket.channel = "REGISTER";
 				byte[] pname = ("simplefeatures").getBytes();
-				newpacket.field_44010_b = pname.length;
-				newpacket.field_44011_c = pname;
+				newpacket.length = pname.length;
+				newpacket.data = pname;
 				addToSendQueue(newpacket);
 				Packet250CustomPayload loginpacket = new Packet250CustomPayload();
-				loginpacket.field_44012_a = "simplefeatures";
+				loginpacket.channel = "simplefeatures";
 				JSONObject msgjson = new JSONObject();
 				try {
 					msgjson.put("id", "login");
@@ -995,8 +995,8 @@ public class NetClientHandler extends NetHandler
 				}
 				
 				byte[] msg = msgjson.toString().getBytes();
-				loginpacket.field_44010_b = msg.length;
-				loginpacket.field_44011_c = msg;
+				loginpacket.length = msg.length;
+				loginpacket.data = msg;
 				addToSendQueue(loginpacket);
 				return;
 			} else {

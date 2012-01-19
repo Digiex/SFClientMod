@@ -82,7 +82,7 @@ public class GuiSFMailbox extends GuiScreen {
 		}
 		if (guibutton.id == 2) {
 			Packet250CustomPayload packet = new Packet250CustomPayload();
-			packet.field_44012_a = "simplefeatures";
+			packet.channel = "simplefeatures";
 			JSONObject msgjson = new JSONObject();
 			try {
 				msgjson.put("id", "deletemail");
@@ -97,8 +97,8 @@ public class GuiSFMailbox extends GuiScreen {
 			}
 
 			byte[] msg = msgjson.toString().getBytes();
-			packet.field_44010_b = msg.length;
-			packet.field_44011_c = msg;
+			packet.length = msg.length;
+			packet.data = msg;
 			mc.getSendQueue().addToSendQueue(packet);
 		} else if (guibutton.id == 1) {
 			try {
@@ -113,7 +113,7 @@ public class GuiSFMailbox extends GuiScreen {
 			mc.displayGuiScreen(new GuiSFNewMail(this));
 		} else if (guibutton.id == 6) {
 			Packet250CustomPayload packet = new Packet250CustomPayload();
-			packet.field_44012_a = "simplefeatures";
+			packet.channel = "simplefeatures";
 			JSONObject msgjson = new JSONObject();
 			try {
 				msgjson.put("id", "clearmailbox");
@@ -127,8 +127,8 @@ public class GuiSFMailbox extends GuiScreen {
 			}
 
 			byte[] msg = msgjson.toString().getBytes();
-			packet.field_44010_b = msg.length;
-			packet.field_44011_c = msg;
+			packet.length = msg.length;
+			packet.data = msg;
 			mc.getSendQueue().addToSendQueue(packet);
 		} else if (guibutton.id == 0) {
 			mc.displayGuiScreen(null);

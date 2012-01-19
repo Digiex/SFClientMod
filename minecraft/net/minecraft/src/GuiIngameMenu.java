@@ -54,10 +54,6 @@ public class GuiIngameMenu extends GuiScreen
             mc.displayGuiScreen(null);
             mc.setIngameFocus();
         }
-        if (guibutton.id == 3)
-        {
-            mc.displayGuiScreen(new GuiSFHelp());
-        }
         if (guibutton.id == 5)
         {
             mc.displayGuiScreen(new GuiAchievements(mc.statFileWriter));
